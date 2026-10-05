@@ -3,30 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PN3C - Alerte Citoyenne</title>
+<title>PN3C</title>
 <style>
-body{margin:0;font-family:Arial;background:#111;color:white;text-align:center}
-.banner{background:#000;color:#FFD700;padding:16px;font-weight:900;border-bottom:3px solid #FFD700;position:sticky;top:0}
-.btn{margin:60px auto;display:block;width:220px;height:220px;border-radius:50%;background:#d00;color:white;font-size:28px;font-weight:900;border:8px solid #fff;box-shadow:0 0 30px red}
-small{display:block;margin-top:20px;color:#aaa}
+body{margin:0;font-family:Arial;background:#0a0a0a;color:white;text-align:center}
+.banner{background:#000;color:#FFD700;padding:14px;font-weight:900;font-size:13px;border-bottom:3px solid #FFD700;position:sticky;top:0}
+.btn{margin:50px auto;display:block;width:220px;height:220px;border-radius:50%;background:#d00;color:white;font-size:28px;font-weight:900;border:8px solid #fff;box-shadow:0 0 30px red}
 </style>
 </head>
 <body>
-<div class="banner">✝️ JÉSUS-CHRIST EST SEIGNEUR - L'UNIQUE PROTECTEUR SUPRÊME DU MONDE ✝️</div>
+<div class="banner">✝️ JÉSUS-CHRIST EST SEIGNEUR - UNIQUE PROTECTEUR DU MONDE ✝️</div>
 <h2>PN3C - BOUTON D'ALERTE CITOYENNE</h2>
 <p>1 clic = Secours - Projet Ivoirien</p>
 <button class="btn" onclick="alerte()">SECOURS</button>
-<small>Appuie pour alerter le Bunker CCO le plus proche</small>
 <script>
 function alerte(){
- if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(p=>{
-   const lat=p.coords.latitude, lon=p.coords.longitude;
-   const msg=`ALERTE PN3C%0A%0APosition: https://www.google.com/maps?q=${lat},${lon}%0AHeure: ${new Date().toLocaleString()}`;
-   window.open(`https://wa.me/?text=${msg}`,'_blank');
-   alert("Alerte envoyée! Que Jésus te protège!");
-  });
- } else { alert("Active ta localisation!"); }
+ navigator.geolocation.getCurrentPosition(p=>{
+  const lat=p.coords.latitude,lon=p.coords.longitude;
+  const data={lat,lon,time:new Date().toLocaleString()};
+  localStorage.setItem('pn3c_alerte',JSON.stringify(data));
+  window.location.href=`pn3c.html?lat=${lat}&lon=${lon}`;
+ },()=>{alert("Active ta localisation!");});
 }
 </script>
 </body>
