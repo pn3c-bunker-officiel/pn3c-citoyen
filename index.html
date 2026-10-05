@@ -1,90 +1,33 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PN3C - BUNKER CCO</title>
+<title>PN3C - Alerte Citoyenne</title>
 <style>
-body{margin:0;font-family:Arial;background:#000;color:#fff;text-align:center}
-.banner{background:#000;color:#FFD700;padding:14px;font-weight:900;font-size:13px;border-bottom:3px solid #FFD700}
-.card{margin:20px;background:#111;padding:20px;border-radius:12px;border:2px solid #333}
-.btn{padding:15px 30px;font-size:18px;font-weight:900;border-radius:8px;border:none;cursor:pointer}
-.treat{background:#00cc00;color:#000}
-.alarm{background:#111;color:red;animation:blink 0.5s infinite}
-@keyframes blink{50%{background:red;color:white}}
-#status{font-size:20px;margin:15px}
+body{margin:0;font-family:Arial;background:#111;color:white;text-align:center}
+.banner{background:#000;color:#FFD700;padding:16px;font-weight:900;border-bottom:3px solid #FFD700;position:sticky;top:0}
+.btn{margin:60px auto;display:block;width:220px;height:220px;border-radius:50%;background:#d00;color:white;font-size:28px;font-weight:900;border:8px solid #fff;box-shadow:0 0 30px red}
+small{display:block;margin-top:20px;color:#aaa}
 </style>
 </head>
 <body>
-<div class="banner">✝️ JÉSUS-CHRIST EST SEIGNEUR - UNIQUE PROTECTEUR DU MONDE ✝️</div>
-<h2>PN3C - POSTE CCO</h2>
-<div class="card">
-<div id="status">⏳ En attente d'alerte...</div>
-<div id="details"></div>
-<button id="treatBtn" class="btn treat" style="display:none" onclick="traiter()">✅ TRAITER L'ALERTE</button>
-</div>
-<audio id="bip" preload="auto"><source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+<div class="banner">✝️ JÉSUS-CHRIST EST SEIGNEUR - L'UNIQUE PROTECTEUR SUPRÊME DU MONDE ✝️</div>
+<h2>PN3C - BOUTON D'ALERTE CITOYENNE</h2>
+<p>1 clic = Secours - Projet Ivoirien</p>
+<button class="btn" onclick="alerte()">SECOURS</button>
+<small>Appuie pour alerter le Bunker CCO le plus proche</small>
 <script>
-let alarmTimer, alarmInterval, audioCtx;
-let alerteTraitee=false;
-
-function vibrer(pattern){ if(navigator.vibrate) navigator.vibrate(pattern); }
-function jouerBip(){
- const audio=document.getElementById('bip');
- audio.play().catch(()=>{});
- vibrer([500,200,500]);
+function alerte(){
+ if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(p=>{
+   const lat=p.coords.latitude, lon=p.coords.longitude;
+   const msg=`ALERTE PN3C%0A%0APosition: https://www.google.com/maps?q=${lat},${lon}%0AHeure: ${new Date().toLocaleString()}`;
+   window.open(`https://wa.me/?text=${msg}`,'_blank');
+   alert("Alerte envoyée! Que Jésus te protège!");
+  });
+ } else { alert("Active ta localisation!"); }
 }
-
-function declencherAlarmeUrgente(){
- document.body.classList.add('alarm');
- document.getElementById('status').innerHTML="🚨🚨 ALERTE NON TRAITÉE - URGENCE! 🚨🚨";
- vibrer([1000,200,1000,200,1000]);
- // Alarme sonore continue
- try{
-  audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  alarmInterval=setInterval(()=>{
-   const o=audioCtx.createOscillator();
-   o.type='square'; o.frequency.value=1000;
-   o.connect(audioCtx.destination); o.start();
-   setTimeout(()=>o.stop(),500);
-   vibrer([1000]);
-  },1000);
- }catch(e){}
-}
-
-function traiter(){
- alerteTraitee=true;
- clearTimeout(alarmTimer); clearInterval(alarmInterval);
- document.body.classList.remove('alarm');
- if(audioCtx) audioCtx.close();
- vibrer(0);
- document.getElementById('status').innerHTML="✅ Alerte traitée - Que Dieu te bénisse!";
- document.getElementById('treatBtn').style.display='none';
-}
-
-window.onload=()=>{
- const params=new URLSearchParams(location.search);
- let lat=params.get('lat'), lon=params.get('lon');
- let stored=localStorage.getItem('pn3c_alerte');
- if(lat && lon){
-  document.getElementById('status').innerHTML="🚨 NOUVELLE ALERTE REÇUE! 🚨";
-  document.getElementById('details').innerHTML=`<p>📍 <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="color:#FFD700">Voir position GPS</a><br>Heure: ${new Date().toLocaleString()}</p>`;
-  document.getElementById('treatBtn').style.display='inline-block';
-  jouerBip();
-  // Si pas traité en 30s → alarme
-  alarmTimer=setTimeout(()=>{
-   if(!alerteTraitee) declencherAlarmeUrgente();
-  },30000);
- } else if(stored){
-  const d=JSON.parse(stored);
-  document.getElementById('status').innerHTML="🚨 ALERTE EN MÉMOIRE!";
-  document.getElementById('details').innerHTML=`<p>📍 <a href="https://www.google.com/maps?q=${d.lat},${d.lon}" target="_blank" style="color:#FFD700">Voir position</a><br>${d.time}</p>`;
-  document.getElementById('treatBtn').style.display='inline-block';
-  jouerBip();
-  alarmTimer=setTimeout(()=>{ if(!alerteTraitee) declencherAlarmeUrgente(); },30000);
- }
-};
 </script>
 </body>
 </html>
